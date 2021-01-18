@@ -28,12 +28,22 @@ class SnakesLaddersFMP(FiniteMarkovProcess[BlockState]):
     def get_transition_map(self) -> Transition[BlockState]:
         d: Dict[BlockState, Categorical[BlockState]] = {}
         for i in range(self.board_size - self.dice_size + 1):
-            state_probs_map: Mapping[BlockState, float] =\
-                {BlockState(self.sl_mapping[j]): 1/self.dice_size for j in range(i+1, i+self.dice_size+1)}
+            state_probs_map: Mapping[BlockState, float] = {}
+            #{BlockState(self.sl_mapping[j]): 1/self.dice_size for j in range(i+1, i+self.dice_size+1)}
+            for j in range(i+1, i+self.dice_size):
+                if BlockState(self.sl_mapping[j]) not in state_probs_map:
+                    state_probs_map[BlockState(self.sl_mapping[j])] = 1/self.dice_size
+                else:
+                    state_probs_map[BlockState(self.sl_mapping[j])] += 1/self.dice_size
             d[BlockState(i)] = Categorical(state_probs_map)
         for i in range(self.board_size - self.dice_size + 1, self.board_size):
-            state_probs_map: Mapping[BlockState, float] =\
-                {BlockState(self.sl_mapping[j]): 1/self.dice_size for j in range(i+1, self.board_size+1)}
+            state_probs_map: Mapping[BlockState, float] = {}
+            #{BlockState(self.sl_mapping[j]): 1/self.dice_size for j in range(i+1, self.board_size+1)}
+            for j in range(i+1, self.board_size+1):
+                if BlockState(self.sl_mapping[j]) not in state_probs_map:
+                    state_probs_map[BlockState(self.sl_mapping[j])] = 1/self.dice_size
+                else:
+                    state_probs_map[BlockState(self.sl_mapping[j])] += 1/self.dice_size
             state_probs_map[BlockState(i)] = (self.dice_size - (self.board_size-i)) / self.dice_size
             d[BlockState(i)] = Categorical(state_probs_map)
         d[BlockState(self.board_size)] = None
@@ -49,13 +59,6 @@ class SnakesLaddersFMP(FiniteMarkovProcess[BlockState]):
                 one_trace.append(s.block)
             all_traces.append(np.array(one_trace))
         return np.array(all_traces)
-
-    def find_expected_num_steps(self) -> float:
-        transition_matrix = self.get_transition_matrix()
-        q = np.identity(self.board_size) - transition_matrix
-        ones = np.ones(self.board_size)
-        t = np.linalg.solve(q, ones)
-        return round(t[0], 5)
 
 def get_finish_time_histogram(finish_times: np.ndarray) -> Tuple[Sequence[int], Sequence[int]]:
     count_dict = collections.Counter(finish_times)
@@ -98,10 +101,6 @@ if __name__ == '__main__':
     sl_mapping[88] = 50
     sl_mapping[94] = 42
     sl_mapping[98] = 54
-
-    #The lines below verify the result we get in prob4.py for the expected number of steps
-    #expected_num_steps = sl_mp.find_expected_num_steps()
-    #print("Expected number of dice rolls to finish the game: {}".format(expected_num_steps))
 
     sl_mp = SnakesLaddersFMP(sl_mapping)
     num_traces = 1000
