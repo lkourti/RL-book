@@ -24,7 +24,7 @@ class SnakesLaddersFMP(FiniteMarkovProcess[BlockState]):
         self.board_size = 100
         self.dice_size = 6
         self.sl_mapping = sl_mapping
-        super().__init__(self.get_transition_map())
+        FiniteMarkovProcess.__init__(self, self.get_transition_map())
 
     def get_transition_map(self) -> Transition[BlockState]:
         d: Dict[BlockState, Categorical[BlockState]] = {}
@@ -50,6 +50,13 @@ class SnakesLaddersFMP(FiniteMarkovProcess[BlockState]):
                 one_trace.append(s.block)
             all_traces.append(np.array(one_trace))
         return np.array(all_traces)
+
+    def find_expected_num_steps(self) -> float:
+        transition_matrix = self.get_transition_matrix()
+        q = np.identity(self.board_size) - transition_matrix
+        ones = np.ones(self.board_size)
+        t = np.linalg.solve(q, ones)
+        return round(t[0], 5)
 
 def get_finish_time_histogram(finish_times: np.ndarray) -> Tuple[Sequence[int], Sequence[int]]:
     count_dict = collections.Counter(finish_times)
@@ -93,9 +100,13 @@ if __name__ == '__main__':
     sl_mapping[94] = 42
     sl_mapping[98] = 54
 
+    #The lines below verify the result we get in prob4.py for the expected number of steps
+    #expected_num_steps = sl_mp.find_expected_num_steps()
+    #print("Expected number of dice rolls to finish the game: {}".format(expected_num_steps))
 
     sl_mp = SnakesLaddersFMP(sl_mapping)
     num_traces = 1000
     sl_traces = sl_mp.generate_traces(num_traces)
     finish_times = np.array([len(trace) for trace in sl_traces])
     plot_finish_time_distr(finish_times, num_traces)
+
