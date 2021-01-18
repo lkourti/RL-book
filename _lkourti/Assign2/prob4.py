@@ -1,13 +1,7 @@
-from dataclasses import dataclass
-from typing import Mapping, Dict, Sequence, Tuple
+from typing import Mapping, Dict, Tuple
 from prob2 import BlockState, SLMapping, SnakesLaddersFMP
 from rl.distribution import Categorical
-from rl.markov_process import Transition, FiniteMarkovProcess, RewardTransition, FiniteMarkovRewardProcess
-from rl.gen_utils.plot_funcs import plot_list_of_curves
-import collections
-import matplotlib.pyplot as plt
-import numpy as np
-import itertools
+from rl.markov_process import RewardTransition, FiniteMarkovRewardProcess
 
 class SnakesLaddersFMRP(SnakesLaddersFMP, FiniteMarkovRewardProcess[BlockState]):
     def __init__(self, sl_mapping: SLMapping):

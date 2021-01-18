@@ -4,7 +4,6 @@ from rl.distribution import Categorical
 from rl.markov_process import Transition, FiniteMarkovProcess
 from rl.gen_utils.plot_funcs import plot_list_of_curves
 import collections
-import matplotlib.pyplot as plt
 import numpy as np
 import itertools
 
