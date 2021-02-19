@@ -1,10 +1,5 @@
-import itertools
-from typing import Callable, Iterable, Iterator, TypeVar, Dict
-from rl.function_approx import FunctionApprox
+from typing import Iterable, Iterator, TypeVar, Dict
 import rl.markov_process as mp
-import rl.markov_decision_process as mdp
-import rl.iterate as iterate
-from copy import deepcopy
 
 S = TypeVar('S')
 
@@ -23,7 +18,6 @@ def evaluate_mrp_dt(
         state = step.state
         reward = step.reward
         state1 = step.next_state
-        #vf_old = deepcopy(vf)
         if state in occurrence:
             occurrence[state] += 1
         else:
