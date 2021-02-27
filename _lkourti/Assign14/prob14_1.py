@@ -7,7 +7,11 @@ A = TypeVar('A')
 
 
 class LSTD:
-    def __init__(self, features: Sequence[Callable[[S], float]], γ: float):
+    def __init__(
+            self,
+            features: Sequence[Callable[[S], float]],
+            γ: float
+    ):
         self.features: Sequence[Callable[[S], float]] = features
         self.γ: float = γ
         self.m: int = len(features)
@@ -19,8 +23,8 @@ class LSTD:
             state: S = step.state
             reward: float = step.reward
             state1: S = step.next_state
-            features_s: np.ndarray = np.array([f[state] for f in self.features])
-            features_s1: np.ndarray = np.array([f[state1] for f in self.features])
+            features_s: np.ndarray = np.array([f(state) for f in self.features])
+            features_s1: np.ndarray = np.array([f(state1) for f in self.features])
             self.A += np.outer(features_s, features_s - self.γ * features_s1)
             self.b += reward * features_s
 
