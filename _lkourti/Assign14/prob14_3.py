@@ -24,8 +24,7 @@ def get_price_for_lspi(
             if step == num_dt:
                 continue_price = 0.
             else:
-                continue_price = weights.dot([f(step, price_seq) for f in
-                                             feature_funcs])
+                continue_price = weights.dot([f(step, price_seq) for f in feature_funcs])
             step += 1
             if exercise_price > continue_price:
                 prices[path_num] = gamma**(-t) * exercise_price
@@ -50,15 +49,14 @@ def lspi_for_am(
     dt = expiry / num_dt
 
     for _ in range(num_iters):
-        a_mat = np.zeros((num_features, num_features))
-        b_vec = np.zeros(num_features)
+        A = np.zeros((num_features, num_features))
+        b = np.zeros(num_features)
 
         for path_num, path in enumerate(paths):
 
             for step in range(num_dt):
                 t = step * dt
-                phi_s = np.array([f(step, path[:(step + 1)]) for f in
-                                  feature_funcs])
+                phi_s = np.array([f(step, path[:(step + 1)]) for f in feature_funcs])
                 next_path = path[:(step + 2)]
                 phi_sp = np.zeros(num_features)
                 reward = 0.
@@ -67,23 +65,19 @@ def lspi_for_am(
                 if step == num_dt - 1:
                     reward = next_payoff
                 else:
-                    next_phi = np.array([f(step + 1, next_path[-1])
-                                         for f in feature_funcs])
+                    next_phi = np.array([f(step + 1, next_path[-1]) for f in feature_funcs])
                     if next_payoff > weights.dot(next_phi):
                         reward = next_payoff
                     else:
                         phi_sp = next_phi
 
-                a_mat += np.outer(
-                    phi_s,
-                    phi_s - phi_sp * gamma
-                )
-                b_vec += reward * gamma * phi_s
+                A += np.outer(phi_s, phi_s - phi_sp * gamma)
+                b += reward * gamma * phi_s
 
-        a_mat /= iter_steps
-        a_mat += epsilon * np.eye(num_features)
-        b_vec /= iter_steps
-        weights = np.linalg.inv(a_mat).dot(b_vec)
+        A /= iter_steps
+        A += epsilon * np.eye(num_features)
+        b /= iter_steps
+        weights = np.linalg.inv(A).dot(b)
 
     return get_price_for_lspi(
         expiry,
