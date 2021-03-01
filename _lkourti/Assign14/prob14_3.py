@@ -16,8 +16,7 @@ def get_price_for_lspi(
     prices = np.zeros(num_paths)
     dt = expiry / num_dt
     for path_num, path in enumerate(paths):
-        step = 0
-        while step <= num_dt:
+        for step in range(num_dt + 1):
             t = dt * step
             price_seq = path[:(step + 1)]
             exercise_price = payoff(t, price_seq[-1])
@@ -25,10 +24,9 @@ def get_price_for_lspi(
                 continue_price = 0.
             else:
                 continue_price = weights.dot([f(step, price_seq) for f in feature_funcs])
-            step += 1
             if exercise_price > continue_price:
                 prices[path_num] = gamma**(-t) * exercise_price
-                step = num_dt + 1
+                break
     return np.average(prices)
 
 
