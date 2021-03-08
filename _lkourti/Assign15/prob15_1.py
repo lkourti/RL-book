@@ -1,5 +1,10 @@
+'''
+It is observed that all the algorithms return the same Value Function
+apart from the MRP value function. This stems from the fact that the
+MRP value function is using the empirical probabilities and reward
+functions in place of the true ones.
+'''
 from typing import Sequence, Tuple, Mapping, Dict
-
 from operator import itemgetter
 import numpy as np
 from itertools import groupby
