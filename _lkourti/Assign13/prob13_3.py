@@ -10,8 +10,8 @@ import random
 S = TypeVar('S')
 A = TypeVar('A')
 
-
-def find_qvf_mc_control(
+# there are errors. for correct implementation see the Final exam submission
+def find_qvf_qlearning_control(
         states: Iterable[S],
         non_terminal_states: Sequence[S],
         actions: Dict[S, Sequence[A]],

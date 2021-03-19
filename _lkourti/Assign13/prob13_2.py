@@ -8,6 +8,7 @@ import random
 S = TypeVar('S')
 A = TypeVar('A')
 
+# there are errors. for correct implementation see the Final exam submission
 def find_qvf_sarsa_control(
         states: Iterable[S],
         non_terminal_states: Sequence[S],
